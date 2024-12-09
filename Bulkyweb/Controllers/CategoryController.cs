@@ -1,21 +1,23 @@
-﻿using Book.DataAccess.Data;
-using Book.DataAccess.Repository.IRepository;
-using Book.Models;
+﻿//using Book.DataAccess.Data;
+//using Book.DataAccess.Repository.IRepository;
+//using Book.Models;
+using Bulky.DataAccess.Repository.IRepository;
+using Bulky.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bookweb.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ICategoryRepository _category;
-        public CategoryController(ICategoryRepository db)
+        private readonly IUnitOfWork _unitofwork;
+        public CategoryController(IUnitOfWork unitofwork)
         {
-            _category = db;
+            _unitofwork = unitofwork;
 
         }
         public IActionResult Index()
         {
-            IEnumerable<Category> objFromDb = _category.GetAll();
+            IEnumerable<Category> objFromDb = _unitofwork.Category.GetAll();
             return View(objFromDb);
         }
      
@@ -42,13 +44,17 @@ namespace Bookweb.Controllers
 
 
         }
+        public IActionResult create()
+        {
+            return View();
+        }
         public IActionResult Edit(int? id)
         {
-            if (id == 0|| id== null)
+            if (id == 0|| id== null)    
             {
                 return NotFound();
             }
-            Category category = _category.Get(item => item.Id == id);
+            Category category = _unitofwork.Category.Get(item => item.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -70,8 +76,8 @@ namespace Bookweb.Controllers
             //}
             if (ModelState.IsValid)
             {
-                _category.Update(obj);
-                _category.Save();
+                _unitofwork.Category.Update(obj);
+                _unitofwork.Save();
                 TempData["success"] = "Category updated Successfully";
                 return RedirectToAction("Index");
             }
@@ -85,7 +91,7 @@ namespace Bookweb.Controllers
             {
                 return NotFound();
             }
-            Category category = _category.Get(item => item.Id == id);
+            Category category = _unitofwork.Category.Get(item => item.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -94,8 +100,8 @@ namespace Bookweb.Controllers
         }
         public IActionResult Deletecategory(Category category)
         {
-             _category.Remove(category);
-            _category.Save();
+            _unitofwork.Category.Remove(category);
+            _unitofwork.Save();
             TempData["success"] = "Category Deleted Successfully";
             return RedirectToAction("Index");
         }
