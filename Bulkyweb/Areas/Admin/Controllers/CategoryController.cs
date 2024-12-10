@@ -5,8 +5,9 @@ using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bookweb.Controllers
+namespace Bulkyweb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitofwork;
@@ -20,7 +21,7 @@ namespace Bookweb.Controllers
             IEnumerable<Category> objFromDb = _unitofwork.Category.GetAll();
             return View(objFromDb);
         }
-     
+
         [HttpPost]
         public IActionResult Create(Category obj)
 
@@ -35,8 +36,8 @@ namespace Bookweb.Controllers
             }
             if (ModelState.IsValid)
             {
-                _category.Add(obj);
-                _category.Save();
+                _unitofwork.Category.Add(obj);
+                _unitofwork.Save();
                 TempData["success"] = "Category Added";
                 return RedirectToAction("Index");
             }
@@ -50,7 +51,7 @@ namespace Bookweb.Controllers
         }
         public IActionResult Edit(int? id)
         {
-            if (id == 0|| id== null)    
+            if (id == 0 || id == null)
             {
                 return NotFound();
             }
@@ -60,7 +61,7 @@ namespace Bookweb.Controllers
                 return NotFound();
             }
             return View(category);
-            
+
         }
         [HttpPost]
         public IActionResult Edit(Category obj)
