@@ -1,6 +1,10 @@
 ﻿using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
+
+//using Bulky.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace Bulkyweb.Areas.Admin.Controllers
 {
@@ -20,10 +24,20 @@ namespace Bulkyweb.Areas.Admin.Controllers
         public IActionResult Index()
         {
             IEnumerable<Product> objview =_unitofwork.Product.GetAll();
+
+
+          
             return View(objview);
         }
         public IActionResult create()
         {
+            IEnumerable<SelectListItem> CategoryList = _unitofwork.Category.GetAll().Select(u => new SelectListItem
+            {
+                Text = u.Name,
+                Value = u.Id.ToString()
+            });
+            ViewBag.CategoryList = CategoryList;
+
             return View();
         }
         [HttpPost]
@@ -38,7 +52,7 @@ namespace Bulkyweb.Areas.Admin.Controllers
                 TempData["success"] = "Category Added";
                 return RedirectToAction("Index");
             }
-            return View();
+            return View("Index");
 
 
         }
